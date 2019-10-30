@@ -1,4 +1,5 @@
-const express = 'express';
+/*dependencies & inports*/
+const express = require('express');
 
 const router = express.Router();
 
