@@ -34,7 +34,14 @@ function validateUserId(req, res, next) {
     });
 }
 
-function validateUser(req, res, next) {}
+function validateUser(req, res, next) {
+    const body = req.body;
+    const name = req.body.name;
+
+    !body ? res.status(400).json({ message: "missing user data" })
+    : !name ? res.status(400).json({ message: "missing required name field"  })
+    : next();
+}
 
 function validatePost(req, res, next) {}
 
