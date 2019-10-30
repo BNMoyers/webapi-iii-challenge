@@ -1,21 +1,82 @@
 /*dependencies & imports*/
 const express = require("express");
 const userDb = require("./userDb");
+const postsDb = require("../posts/postDb");
 const router = express.Router();
 
-router.post("/", (req, res) => {});
+router.post("/", validateUser, (req, res) => {
+  const body = req.body;
+  userDb
+    .insert(body)
+    .then(user => {
+      res.status(201).json({ user });
+    })
+    .catch(err => {
+      res.status(500).json({ message: "could not add user " });
+    });
+});
 
-router.post("/:id/posts", (req, res) => {});
+router.post("/:id/posts", validateUserId, validatePost, (req, res) => {
+  const body = req.body;
+  body.user_id = req.params.id;
 
-router.get("/", (req, res) => {});
+  postDb
+    .insert(body)
+    .then(user => {
+      res.status(201).json({ user });
+    })
+    .catch(err => {
+      res.status(500).json({ message: "could not add  post" });
+    });
+});
 
-router.get("/:id", (req, res) => {});
+router.get("/", (req, res) => {
+  userDb
+    .get()
+    .then(user => {
+      res.status(200).json({ user });
+    })
+    .catch(err => {
+      res.status(500).json({ message: "could not retreive users" });
+    });
+});
 
-router.get("/:id/posts", (req, res) => {});
+router.get("/:id", validateUserId, (req, res) => {
+  res.status(201).json(req.user);
+});
 
-router.delete("/:id", (req, res) => {});
+router.get("/:id/posts", validateUserId, (req, res) => {
+  userDb.getUserPosts(req.params.id);
+  then(posts => {
+    res.status(200).json({ posts });
+  }).catch(err => {
+    res.status(500).json({ message: "could not retreive user's posts" });
+  });
+});
 
-router.put("/:id", (req, res) => {});
+router.delete("/:id", validateUserId, (req, res) => {
+  userDb
+    .remove(req.params.id)
+    .then(user => {
+      res.status(200).json({ user });
+    })
+    .catch(err => {
+      res.status(500).json({ message: "could not delete user" });
+    });
+});
+
+router.put("/:id", validateUser, validateUserId, (req, res) => {
+  userDb.update(req.params.id, req.body).then(() => {
+    userDb
+      .getById(req.params.id)
+      .then(user => {
+        res.status(200).json(user);
+      })
+      .catch(err => {
+        res.status(500).json({ message: "could not update user" });
+      });
+  });
+});
 
 //custom middleware
 
